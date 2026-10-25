@@ -202,6 +202,19 @@ function parseICS(text){
     else if(key==="EXDATE"){ var xs=val.split(","); for(var q=0;q<xs.length;q++) cur.ex.push(xs[q].substring(0,8)); }
     else if(key==="STATUS" && val==="CANCELLED") cur.cancelled = true;
   }
+  /* repeats limited by COUNT: work out the date of the last repeat once, so they stop there */
+  for(i=0;i<evs.length;i++){
+    var ev = evs[i];
+    if(ev.rr && ev.rr.COUNT){
+      var n = parseInt(ev.rr.COUNT,10), d = startOfDay(ev.start), c = 0, guard = 0;
+      while(guard < 4000){
+        if(occursOn(ev, d)) c++;
+        if(c >= n) break;
+        d = addDays(d, 1); guard++;
+      }
+      ev.lastDay = d;
+    }
+  }
   return evs;
 }
 var BYDAY = { SU:0, MO:1, TU:2, WE:3, TH:4, FR:5, SA:6 };
@@ -215,6 +228,7 @@ function occursOn(ev, day){
   }
   if(d0 < s0) return false;
   if(ev.rr.UNTIL){ var u = parseDT(ev.rr.UNTIL); if(u && d0 > startOfDay(u.d)) return false; }
+  if(ev.lastDay && d0 > ev.lastDay) return false;
   var iv = parseInt(ev.rr.INTERVAL||"1",10), f = ev.rr.FREQ;
   var diff = Math.round((d0 - s0)/86400000);
   if(f==="DAILY") return diff % iv === 0;
