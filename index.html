@@ -58,6 +58,9 @@
   .chip { font-size:12px; line-height:15px; height:15px; margin-bottom:2px; padding:0 4px; border-left:3px solid; border-radius:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .chip b { font-weight:600; opacity:.7; margin-right:4px; }
   .more { font-size:11px; color:#7d8da6; padding-left:4px; }
+  .chip.hol { border-color:#ffb454; background:rgba(255,180,84,.18); color:#ffd9a0; }
+  .cell.hol .dnum { color:#ffb454; }
+  #coming { font-size:14px; color:#9fb0c8; margin-bottom:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:none; }
   .demo { font-size:12px; color:#566379; margin-left:10px; }
   #toast { position:absolute; bottom:2px; left:0; right:0; text-align:center; font-size:12px; color:#7d8da6; }
 </style>
@@ -88,6 +91,7 @@
       <div id="mtitle"></div>
       <div id="legend"></div>
     </div>
+    <div id="coming"></div>
     <div id="wk"></div>
     <div id="grid"></div>
   </div>
@@ -111,7 +115,24 @@ var CONFIG = {
   ],
   /* Browsers block most .ics downloads (CORS). If you run a small relay, put its
      address here, e.g. "https://my-relay.example.com/?url=" (calendar address is appended, encoded). */
-  corsProxy: ""
+  corsProxy: "",
+
+  /* Georgian public holidays, built into the page (nothing is downloaded).
+     Each entry is [month, day, name]. Edit, add or remove lines freely.
+     Easter days (Good Friday to Easter Monday, Orthodox) are worked out automatically.
+     Extra days off that the government announces from year to year (for example in January)
+     can be added as more lines. Set showHolidays to false to hide them all. */
+  showHolidays: true,
+  easterHolidays: true,
+  holidays: [
+    [1,1,"New Year"], [1,2,"Bedoba"], [1,7,"Orthodox Christmas"], [1,19,"Epiphany"],
+    [3,3,"Mother's Day"], [3,8,"Women's Day"], [4,9,"National Unity Day"],
+    [5,9,"Victory Day"], [5,12,"St Andrew's Day"], [5,17,"Family Sanctity Day"], [5,26,"Independence Day"],
+    [8,28,"Mariamoba"], [10,14,"Svetitskhovloba"], [11,23,"St George's Day"]
+  ],
+
+  /* An event is shown as a birthday (with a cake) if its title contains any of these words. */
+  birthdayWords: ["birthday", "bday", "b-day", "დაბადების", "დაბადება", "день рождения", "🎂"]
 };
 /* ======================================================================== */
 
@@ -280,7 +301,7 @@ function occursOn(ev, day){
 function demoEvents(idx){
   var t = startOfDay(new Date()), set = [
     [["Team meeting",9,30,0],["Gym",18,0,0],["Dentist",11,0,2],["Dinner with friends",19,30,4],["Project deadline",0,0,5],["Client call",14,0,8],["Gym",18,0,9],["Conference",0,0,13],["Car service",10,0,16],["Gym",18,0,-3]],
-    [["Yoga",8,0,0],["Parents' meeting",17,0,1],["Groceries",12,0,2],["Book club",19,0,3],["Birthday party",15,0,6],["Hair salon",13,0,10],["Yoga",8,0,7],["Theatre",20,0,12],["Doctor",9,0,-5]],
+    [["Yoga",8,0,0],["Parents' meeting",17,0,1],["Groceries",12,0,2],["Book club",19,0,3],["Birthday party",15,0,6],["Hair salon",13,0,10],["Yoga",8,0,7],["Theatre",20,0,12],["Doctor",9,0,-5],["Sandro's birthday",0,0,11]],
     [["School",8,30,0],["Football practice",16,30,0],["Math tutor",15,0,1],["Swimming",17,0,3],["Movie night",19,0,5],["Football match",11,0,6],["Swimming",17,0,10],["School trip",0,0,14],["Football practice",16,30,-2]]
   ][idx], out = [];
   for(var i=0;i<set.length;i++){
@@ -288,6 +309,52 @@ function demoEvents(idx){
     out.push({ title:set[i][0], start:s, allDay:set[i][1]===0, ex:[] });
   }
   return out;
+}
+
+/* ---------- Holidays and birthdays ---------- */
+var HOLC = {};
+function orthEaster(y){            /* Orthodox Easter (Julian calendar + 13 days) */
+  var a=y%4, b=y%7, c=y%19, d=(19*c+15)%30, e=(2*a+4*b-d+34)%7, t=d+e+114;
+  return new Date(y, Math.floor(t/31)-1, (t%31)+1+13);
+}
+function holMap(y){
+  if(HOLC[y]) return HOLC[y];
+  var map = {}, i, H = CONFIG.holidays || [];
+  function add(m, d, name){ var k = m+"-"+d; if(!map[k]) map[k] = []; map[k].push(name); }
+  for(i=0;i<H.length;i++) add(H[i][0]-1, H[i][1], H[i][2]);
+  if(CONFIG.easterHolidays){
+    var names = ["Good Friday","Holy Saturday","Easter","Easter Monday"], offs = [-2,-1,0,1], E = orthEaster(y);
+    for(i=0;i<4;i++){ var dt = new Date(E.getFullYear(), E.getMonth(), E.getDate()+offs[i]); add(dt.getMonth(), dt.getDate(), names[i]); }
+  }
+  HOLC[y] = map; return map;
+}
+function holidaysOn(day){
+  if(!CONFIG.showHolidays) return [];
+  return holMap(day.getFullYear())[day.getMonth()+"-"+day.getDate()] || [];
+}
+function isBirthday(title){
+  var t = (title||"").toLowerCase(), w = CONFIG.birthdayWords || [];
+  for(var i=0;i<w.length;i++) if(t.indexOf(w[i].toLowerCase())>=0) return true;
+  return false;
+}
+function renderComing(){
+  var el = $("coming"), today = startOfDay(new Date()), end = addDays(today, 31), items = [], bd = [], i, j, k, p;
+  for(p=0;p<CONFIG.people.length;p++){
+    var src = EVENTS[p] || [];
+    for(j=0;j<src.length;j++) if(isBirthday(src[j].title) && relevant(src[j], today, end)) bd.push(src[j]);
+  }
+  for(i=0;i<=30;i++){
+    var day = addDays(today, i), hn = holidaysOn(day);
+    for(k=0;k<hn.length;k++) items.push({ n:i, text:"🇬🇪 "+hn[k] });
+    for(k=0;k<bd.length;k++) if(occursOn(bd[k], day)) items.push({ n:i, text:"🎂 "+bd[k].title });
+  }
+  var out = [];
+  for(i=0;i<items.length && i<4;i++){
+    var n = items[i].n;
+    out.push(items[i].text+" · "+(n===0 ? "today" : n===1 ? "tomorrow" : "in "+n+" days"));
+  }
+  el.textContent = out.length ? "Coming up:   "+out.join("    •    ") : "";
+  el.style.display = out.length ? "block" : "none";
 }
 
 /* ---------- Month view ---------- */
@@ -345,19 +412,24 @@ function renderMonth(){
       if(a.ev.allDay!==b.ev.allDay) return a.ev.allDay?-1:1;
       return (a.ev.start.getHours()*60+a.ev.start.getMinutes())-(b.ev.start.getHours()*60+b.ev.start.getMinutes());
     });
-    var cls = "cell" + (day.getMonth()!==viewM ? " out" : "") + (sameDay(day,today) ? " today" : "");
+    var hn = holidaysOn(day), slots = maxChips - (hn.length ? 1 : 0);
+    var cls = "cell" + (day.getMonth()!==viewM ? " out" : "") + (sameDay(day,today) ? " today" : "") + (hn.length ? " hol" : "");
     g += '<div class="'+cls+'"><div class="dnum">'+day.getDate()+'</div>';
-    for(j=0;j<list.length && j<maxChips;j++){
+    if(hn.length) g += '<div class="chip hol">'+esc(hn.join(" · "))+'</div>';
+    for(j=0;j<list.length && j<slots;j++){
       var e = list[j].ev, tm = e.allDay ? "" : '<b>'+pad(e.start.getHours())+":"+pad(e.start.getMinutes())+'</b>';
-      g += '<div class="chip" style="border-color:'+list[j].color+';background:'+hexA(list[j].color,0.18)+'">'+tm+esc(e.title||"(no title)")+'</div>';
+      var ttl = e.title || "(no title)";
+      if(isBirthday(ttl)) ttl = "🎂 "+ttl;
+      g += '<div class="chip" style="border-color:'+list[j].color+';background:'+hexA(list[j].color,0.18)+'">'+tm+esc(ttl)+'</div>';
     }
-    if(list.length>maxChips) g += '<div class="more">+'+(list.length-maxChips)+' more</div>';
+    if(list.length>slots) g += '<div class="more">+'+(list.length-slots)+' more</div>';
     g += '</div>';
   }
   var grid = $("grid");
   grid.style.webkitGridTemplateRows = grid.style.gridTemplateRows = "repeat("+rows+", minmax(0,1fr))";
   grid.innerHTML = g;
   renderLegend();
+  renderComing();
 }
 function goMonth(delta){
   if(delta===0){ var n=new Date(); viewY=n.getFullYear(); viewM=n.getMonth(); }
