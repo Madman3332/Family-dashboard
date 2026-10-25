@@ -20,7 +20,17 @@
   #date { font-size:17px; color:#9fb0c8; margin-top:8px; }
   #now { font-size:15px; color:#9fb0c8; margin-top:8px; }
 
-  #weather { -webkit-flex:1; flex:1; display:-webkit-flex; display:flex; padding:6px 6px; margin-right:10px; min-width:0; }
+  #sun { width:190px; padding:10px 14px; margin-right:10px; box-sizing:border-box; }
+  #sun .row { display:-webkit-flex; display:flex; }
+  #sun .col2 { -webkit-flex:1; flex:1; }
+  #sun .lab { font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#7d8da6; font-weight:700; }
+  #sun .tm { font-size:22px; font-weight:600; margin-top:2px; }
+  #sun .dl { font-size:12px; color:#9fb0c8; margin-top:4px; }
+  #moon { display:-webkit-flex; display:flex; -webkit-align-items:center; align-items:center; margin-top:8px; padding-top:8px; border-top:1px solid #232b3b; }
+  #moon .mi { font-size:34px; line-height:1; margin-right:10px; }
+  #moon .mn { font-size:14px; font-weight:600; line-height:1.2; }
+  #moon .mp { font-size:12px; color:#9fb0c8; margin-top:2px; }
+  #weather { -webkit-flex:1; flex:1; display:-webkit-flex; display:flex; padding:6px 6px; min-width:0; }
   .day { -webkit-flex:1; flex:1; text-align:center; padding:4px 2px; border-right:1px solid #232b3b; }
   .day:last-child { border-right:0; }
   .day .dn { font-size:15px; color:#9fb0c8; font-weight:600; }
@@ -28,14 +38,6 @@
   .day .hi { font-size:20px; font-weight:600; }
   .day .lo { font-size:15px; color:#7d8da6; }
   .day .pp { font-size:12px; color:#5fa8ff; margin-top:2px; }
-
-  #lights { width:236px; display:-webkit-flex; display:flex; }
-  .lt { -webkit-flex:1; flex:1; border:0; color:#eef2f8; font-family:inherit; text-align:center; padding:8px 4px; cursor:pointer; background:#151b27; border-radius:16px; margin-right:10px; }
-  .lt:last-child { margin-right:0; }
-  .lt.on { background:#e8b43a; color:#1b1503; }
-  .lt .bulb { font-size:40px; line-height:1.1; }
-  .lt .lbl { font-size:15px; font-weight:700; margin-top:6px; line-height:1.15; }
-  .lt .st { font-size:13px; margin-top:6px; opacity:.75; }
 
   #month { -webkit-flex:1; flex:1; min-height:0; padding:10px 12px 10px 12px; display:-webkit-flex; display:flex; -webkit-flex-direction:column; flex-direction:column; }
   #mh { display:-webkit-flex; display:flex; -webkit-align-items:center; align-items:center; margin-bottom:8px; }
@@ -68,8 +70,15 @@
       <div id="date"></div>
       <div id="now"></div>
     </div>
+    <div id="sun" class="card">
+      <div class="row">
+        <div class="col2"><div class="lab">Sunrise</div><div class="tm" id="sunrise">--:--</div></div>
+        <div class="col2"><div class="lab">Sunset</div><div class="tm" id="sunset">--:--</div></div>
+      </div>
+      <div class="dl" id="daylight"></div>
+      <div id="moon"><div class="mi" id="moonIcon"></div><div><div class="mn" id="moonName"></div><div class="mp" id="moonPct"></div></div></div>
+    </div>
     <div id="weather" class="card"><div style="margin:auto;color:#566379">Loading weather…</div></div>
-    <div id="lights"></div>
   </div>
   <div id="month" class="card">
     <div id="mh">
@@ -102,14 +111,7 @@ var CONFIG = {
   ],
   /* Browsers block most .ics downloads (CORS). If you run a small relay, put its
      address here, e.g. "https://my-relay.example.com/?url=" (calendar address is appended, encoded). */
-  corsProxy: "",
-
-  /* Light switches: each needs a web address that turns it on and one that turns it off
-     (for example Home Assistant webhooks). Leave empty until you have them. */
-  lights: {
-    kitchen: { label: "Kitchen Light", onUrl: "", offUrl: "", method: "POST" },
-    tv:      { label: "TV Light",      onUrl: "", offUrl: "", method: "POST" }
-  }
+  corsProxy: ""
 };
 /* ======================================================================== */
 
@@ -134,6 +136,26 @@ function tick(){
 }
 setInterval(tick, 1000); tick();
 
+/* ---------- Moon phase (calculated on the iPad, no internet needed) ---------- */
+var SYNODIC = 29.530588853;
+function moonInfo(date){
+  var jd = date.getTime()/86400000 + 2440587.5;
+  var age = (jd - 2451550.1) % SYNODIC; if(age<0) age += SYNODIC;
+  var names = ["New moon","Waxing crescent","First quarter","Waxing gibbous","Full moon","Waning gibbous","Last quarter","Waning crescent"];
+  var icons = ["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"];
+  var idx = Math.floor(((age + SYNODIC/16) % SYNODIC) / (SYNODIC/8));
+  var illum = Math.round((1 - Math.cos(2*Math.PI*age/SYNODIC)) / 2 * 100);
+  var toFull = (SYNODIC/2 - age + SYNODIC) % SYNODIC;
+  return { name:names[idx], icon:icons[idx], illum:illum, toFull:Math.round(toFull) };
+}
+function showMoon(){
+  var n = new Date(), m = moonInfo(new Date(n.getFullYear(), n.getMonth(), n.getDate(), 12, 0));
+  $("moonIcon").textContent = m.icon;
+  $("moonName").textContent = m.name;
+  $("moonPct").textContent = m.illum+"% lit" + (m.name==="Full moon" ? "" : " · full in "+m.toFull+" d");
+}
+showMoon(); setInterval(showMoon, 10*60*1000);
+
 /* ---------- Weather (Open-Meteo, no key needed) ---------- */
 function wIcon(c){
   if(c===0) return "☀️";
@@ -152,7 +174,7 @@ function wIcon(c){
 function temp(t){ return Math.round(t)+"°"; }
 function loadWeather(){
   var u = "https://api.open-meteo.com/v1/forecast?latitude="+CONFIG.lat+"&longitude="+CONFIG.lon+
-    "&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max"+
+    "&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset"+
     "&timezone=auto&forecast_days=5"+(CONFIG.fahrenheit?"&temperature_unit=fahrenheit":"");
   var x = new XMLHttpRequest();
   x.open("GET", u, true);
@@ -169,6 +191,10 @@ function loadWeather(){
              '<div class="pp">&#128167; '+(d.precipitation_probability_max[i]||0)+'%</div></div>';
       }
       $("weather").innerHTML = h;
+      var sr = d.sunrise[0].split("T")[1], ss = d.sunset[0].split("T")[1];
+      $("sunrise").textContent = sr; $("sunset").textContent = ss;
+      var mins = (+ss.split(":")[0]*60 + +ss.split(":")[1]) - (+sr.split(":")[0]*60 + +sr.split(":")[1]);
+      $("daylight").textContent = "Daylight " + Math.floor(mins/60) + "h " + pad(mins%60) + "m";
       $("now").textContent = CONFIG.city+" · now "+temp(j.current.temperature_2m)+" "+wIcon(j.current.weather_code);
     } catch(e){ toast("Weather unavailable"); }
   };
@@ -363,44 +389,8 @@ function loadCal(idx){
 }
 function loadAllCals(){ for(var i=0;i<CONFIG.people.length;i++) loadCal(i); }
 
-/* ---------- Light switches ---------- */
-var LIGHT_KEYS = ["kitchen","tv"], lightState = {};
-function paintLight(k){
-  var b = $("lt_"+k), cfg = CONFIG.lights[k], on = lightState[k];
-  b.className = "lt " + (on?"on":"off");
-  b.querySelector(".st").textContent = (cfg.onUrl && cfg.offUrl) ? (on?"ON":"OFF") : "not set up";
-}
-function buildLights(){
-  var h = "";
-  for(var i=0;i<LIGHT_KEYS.length;i++){
-    var k = LIGHT_KEYS[i];
-    try { lightState[k] = localStorage.getItem("light_"+k)==="1"; } catch(e){ lightState[k] = false; }
-    h += '<button class="lt off" id="lt_'+k+'"><div class="bulb">&#128161;</div><div class="lbl">'+esc(CONFIG.lights[k].label)+'</div><div class="st"></div></button>';
-  }
-  $("lights").innerHTML = h;
-  for(var j=0;j<LIGHT_KEYS.length;j++){ (function(key){
-    paintLight(key);
-    $("lt_"+key).onclick = function(){ toggleLight(key); };
-  })(LIGHT_KEYS[j]); }
-}
-function toggleLight(k){
-  var cfg = CONFIG.lights[k];
-  if(!cfg.onUrl || !cfg.offUrl){ toast(cfg.label+" is not connected yet — add its on/off web addresses in the settings block."); return; }
-  var target = !lightState[k], x = new XMLHttpRequest();
-  x.open(cfg.method || "POST", target ? cfg.onUrl : cfg.offUrl, true);
-  x.onload = function(){
-    if(x.status>=200 && x.status<300){
-      lightState[k] = target;
-      try { localStorage.setItem("light_"+k, target?"1":"0"); } catch(e){}
-      paintLight(k);
-    } else toast(cfg.label+": server answered "+x.status);
-  };
-  x.onerror = function(){ toast(cfg.label+": request failed"); };
-  x.send();
-}
-
 /* ---------- Start ---------- */
-buildLights(); renderMonth(); loadWeather(); loadAllCals();
+renderMonth(); loadWeather(); loadAllCals();
 setInterval(loadWeather, 30*60*1000);
 setInterval(loadAllCals, 10*60*1000);
 /* at midnight: jump back to the current month and refresh */
