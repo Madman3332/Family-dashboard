@@ -251,13 +251,14 @@ function demoEvents(idx){
 }
 
 /* ---------- Month view ---------- */
-var EVENTS = [], DEMO = [], now0 = new Date();
+var EVENTS = [], DEMO = [], LOADERR = [], now0 = new Date();
 var viewY = now0.getFullYear(), viewM = now0.getMonth(), idleTimer = null;
 
 function renderLegend(){
   var h = "";
   for(var i=0;i<CONFIG.people.length;i++){
-    h += '<span><i style="background:'+CONFIG.people[i].color+'"></i>'+esc(CONFIG.people[i].name)+(DEMO[i]?'<em class="demo">demo</em>':'')+'</span>';
+    var cnt = EVENTS[i] ? EVENTS[i].length : "…";
+    h += '<span><i style="background:'+CONFIG.people[i].color+'"></i>'+esc(CONFIG.people[i].name)+(DEMO[i]?'<em class="demo">demo</em>':'<em class="demo">'+(LOADERR[i]?'error':cnt+' events')+'</em>')+'</span>';
   }
   $("legend").innerHTML = h;
 }
@@ -338,10 +339,12 @@ function loadCal(idx){
   var x = new XMLHttpRequest();
   x.open("GET", url, true);
   x.onload = function(){
-    try { EVENTS[idx] = parseICS(x.responseText); renderMonth(); }
-    catch(e){ toast("Could not read "+p.name+"'s calendar"); }
+    if(x.status<200 || x.status>=300){ LOADERR[idx]=true; renderMonth(); toast(p.name+"'s calendar: server answered "+x.status); return; }
+    if(x.responseText.indexOf("BEGIN:VCALENDAR")<0){ LOADERR[idx]=true; renderMonth(); toast(p.name+"'s calendar: reply is not a calendar"); return; }
+    try { LOADERR[idx]=false; EVENTS[idx] = parseICS(x.responseText); renderMonth(); }
+    catch(e){ LOADERR[idx]=true; renderMonth(); toast("Could not read "+p.name+"'s calendar"); }
   };
-  x.onerror = function(){ toast("Could not load "+p.name+"'s calendar (blocked or offline)"); };
+  x.onerror = function(){ LOADERR[idx]=true; renderMonth(); toast("Could not load "+p.name+"'s calendar (blocked or offline)"); };
   x.send();
 }
 function loadAllCals(){ for(var i=0;i<CONFIG.people.length;i++) loadCal(i); }
