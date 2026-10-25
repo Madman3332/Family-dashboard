@@ -19,7 +19,7 @@
   /* ---- top row: hero | forecast | coming up ---- */
   #top { display:flex; align-items:stretch; height:150px; margin-bottom:10px; }
 
-  #hero { width:410px; padding:10px 18px 8px 18px; margin-right:10px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; }
+  #hero { width:410px; padding:10px 18px 12px 18px; margin-right:10px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; }
   .hrow { display:flex; align-items:flex-start; justify-content:space-between; }
   #time { font-size:60px; font-weight:200; letter-spacing:-2px; line-height:1; }
   #date { font-size:14px; color:#9fb0c8; margin-top:6px; }
@@ -45,6 +45,7 @@
 
   #comingCard { width:196px; padding:10px 12px; box-sizing:border-box; display:flex; flex-direction:column; }
   #comingList { flex:1; margin-top:6px; overflow:hidden; }
+  #comingList.few { display:flex; flex-direction:column; justify-content:center; }
   .ci { display:flex; align-items:center; height:26px; font-size:13px; font-weight:600; }
   .ci .ico { width:20px; font-size:15px; text-align:center; margin-right:6px; }
   .ci .tx { flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -67,16 +68,17 @@
   #wk div.we { color:#8f9bd6; }
   #grid { flex:1; min-height:0; display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); grid-gap:4px; }
   .cell { background:#0f141e; border-radius:8px; padding:3px 4px; overflow:hidden; min-width:0; min-height:0; }
-  .cell.we { background:#141c2e; }
+  .cell.we { background:rgba(255,255,255,.02); }
   .cell.out { opacity:.35; }
   .cell.today { background:#1a2740; box-shadow:inset 0 0 0 2px #4da3ff, 0 0 14px rgba(77,163,255,.35); opacity:1; }
-  .dnum { display:inline-block; min-width:18px; height:18px; line-height:18px; padding:0 3px; box-sizing:border-box; font-size:13px; font-weight:700; color:#9fb0c8; text-align:center; border-radius:9px; margin-bottom:1px; }
+  .dnum { display:inline-block; min-width:18px; height:18px; line-height:18px; padding:0 3px; box-sizing:border-box; font-size:13px; font-weight:700; color:#c8d3e4; text-align:center; border-radius:9px; margin-bottom:1px; }
   .cell.today .dnum { background:#4da3ff; color:#06121f; }
   .cell.hol .dnum { color:#ffb454; }
-  .chip { font-size:12px; line-height:14px; height:14px; margin-bottom:1px; padding:0 5px; border-radius:7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#f1f5fb; }
-  .chip .dot { display:inline-block; width:6px; height:6px; border-radius:3px; margin-right:5px; vertical-align:1px; }
+  .chip { font-size:12px; line-height:14px; height:14px; margin-bottom:1px; padding:0 3px; border-radius:7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#f1f5fb; }
+  .chip .dot { display:inline-block; width:6px; height:6px; border-radius:3px; margin-right:3px; vertical-align:1px; }
   .chip b { font-weight:600; color:#c3cfe2; margin-right:4px; }
   .chip.hol { background:rgba(255,180,84,.18); color:#ffd9a0; }
+  .today-empty { font-size:11px; color:#7d8da6; padding:2px 5px; }
   .more { font-size:11px; line-height:13px; color:#7d8da6; padding-left:5px; }
   #toast { position:absolute; bottom:1px; left:0; right:0; text-align:center; font-size:12px; color:#7d8da6; }
 </style>
@@ -371,10 +373,11 @@ function renderComing(){
     for(k=0;k<bd.length;k++) if(occursOn(bd[k], day)) items.push({ n:i, ico:"🎂", text:bd[k].title || "Birthday" });
   }
   var h = "";
-  for(i=0;i<items.length && i<4;i++){
+  for(i=0;i<items.length && i<3;i++){
     var n = items[i].n, label = n===0 ? "Today" : n===1 ? "Tomorrow" : n+" d";
     h += '<div class="ci"><span class="ico">'+items[i].ico+'</span><span class="tx">'+esc(items[i].text)+'</span><span class="bd'+(n<=1?' soon':'')+'">'+label+'</span></div>';
   }
+  el.className = items.length <= 2 ? "few" : "";
   el.innerHTML = h || '<div class="ci none">Nothing in the next 30 days</div>';
 }
 
@@ -437,12 +440,13 @@ function renderMonth(){
     var cls = "cell" + (day.getMonth()!==viewM ? " out" : "") + (i%7>=5 ? " we" : "") + (isToday ? " today" : "") + (hn.length ? " hol" : "");
     g += '<div class="'+cls+'"><div class="dnum">'+day.getDate()+'</div>';
     if(hn.length) g += '<div class="chip hol"><i class="dot" style="background:#ffb454;box-shadow:0 0 6px #ffb454"></i>'+esc(hn.join(" · "))+'</div>';
+    if(isToday && !list.length && !hn.length) g += '<div class="today-empty">No events today</div>';
     var showN = list.length > slots ? Math.max(slots-1, 0) : list.length;   /* keep a line free for "+N more" */
     for(j=0;j<showN;j++){
       var e = list[j].ev, c = list[j].color, tm = e.allDay ? "" : '<b>'+pad(e.start.getHours())+":"+pad(e.start.getMinutes())+'</b>';
       var ttl = e.title || "(no title)";
       if(isBirthday(ttl)) ttl = "🎂 "+ttl;
-      g += '<div class="chip" style="background:'+hexA(c,0.2)+'"><i class="dot" style="background:'+c+';box-shadow:0 0 6px '+c+'"></i>'+tm+esc(ttl)+'</div>';
+      g += '<div class="chip" style="background:'+hexA(c,0.14)+'"><i class="dot" style="background:'+c+';box-shadow:0 0 6px '+c+'"></i>'+tm+esc(ttl)+'</div>';
     }
     if(list.length>showN) g += '<div class="more">+'+(list.length-showN)+' more</div>';
     g += '</div>';
