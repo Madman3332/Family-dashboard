@@ -9,78 +9,142 @@
 <meta name="apple-mobile-web-app-title" content="Home">
 <style>
   /* Type scale: 60 clock / 26 titles / 20 key numbers / 14 body / 13 small / 12 calendar pills / 11 labels */
-  html, body { margin:0; padding:0; height:100%; background:#0b0f17; color:#eef2f8;
+  html, body { margin:0; padding:0; height:100%; background:#eeecdf; color:#26313b;
     font-family:-apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif; overflow:hidden;
     -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent; }
   #app { position:absolute; top:0; left:0; right:0; bottom:0; padding:22px 16px 12px 16px; display:flex; flex-direction:column; }
-  .card { background:#151b27; border-radius:16px; }
-  .lab { font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#7d8da6; font-weight:700; }
+  .card { background:#fffefa; border-radius:18px; }
+  .lab { font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#77808a; font-weight:700; }
 
   /* ---- top row: hero | forecast | coming up ---- */
-  #top { display:flex; align-items:stretch; height:150px; margin-bottom:10px; }
+  #top { display:flex; align-items:stretch; height:174px; margin-bottom:10px; }
 
-  #hero { width:410px; padding:10px 18px 12px 18px; margin-right:10px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; }
+  #hero { flex:1.25; min-width:0; padding:14px 18px 12px 18px; margin-right:10px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; }
   .hrow { display:flex; align-items:flex-start; justify-content:space-between; }
   #time { font-size:60px; font-weight:200; letter-spacing:-2px; line-height:1; }
-  #date { font-size:14px; color:#9fb0c8; margin-top:6px; }
-  .hr { text-align:right; }
-  .cur { white-space:nowrap; }
-  #curIcon { font-size:32px; margin-right:6px; vertical-align:middle; }
-  #curTemp { font-size:38px; font-weight:300; line-height:1; vertical-align:middle; }
-  .cm { font-size:13px; color:#9fb0c8; margin-top:5px; }
-  .hsun { display:flex; align-items:center; border-top:1px solid #232b3b; padding-top:7px; font-size:14px; white-space:nowrap; }
+  #date { font-size:14px; color:#697581; margin-top:6px; }
+  .hsun { display:flex; align-items:center; border-top:1px solid #e8e5dc; padding-top:7px; font-size:14px; white-space:nowrap; }
   .hsun .g { margin-right:14px; }
   .hsun .g b { font-weight:600; }
-  .hsun .moon { margin-left:auto; margin-right:0; color:#c8d3e4; }
+  .hsun .moon { margin-left:auto; margin-right:0; color:#56616d; }
   #moonIcon { font-size:17px; margin-right:5px; vertical-align:-1px; }
 
-  #weather { flex:1; display:flex; padding:8px 6px; margin-right:10px; min-width:0; }
-  .day { flex:1; text-align:center; padding:6px 2px; border-radius:12px; min-width:0; }
-  .day.today { background:rgba(77,163,255,.12); }
-  .day .dn { font-size:13px; font-weight:700; color:#9fb0c8; text-transform:uppercase; letter-spacing:.5px; }
-  .day .ic { font-size:30px; margin:8px 0 6px 0; line-height:1.1; }
-  .day .hi { font-size:20px; font-weight:600; }
-  .day .lo { font-size:14px; color:#7d8da6; margin-top:1px; }
-  .day .pp { font-size:12px; color:#5fa8ff; margin-top:4px; }
+  #weather { flex:1; display:flex; flex-direction:column; justify-content:space-between; padding:12px 14px; margin-right:10px; min-width:0; box-sizing:border-box; background:#9ccbed; color:#18334c; overflow:hidden; }
+  .weather-current { display:flex; align-items:center; justify-content:space-between; min-height:0; }
+  .weather-city { font-size:11px; font-weight:700; color:#335875; }
+  .weather-state { font-size:12px; color:#335875; margin-top:2px; }
+  .weather-temperature { font-size:38px; font-weight:600; line-height:1.1; margin-top:1px; }
+  .weather-range { font-size:11px; color:#335875; margin-top:1px; }
+  .weather-icon { font-size:42px; line-height:1; margin-left:8px; }
+  .weather-forecast { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); border-top:1px solid rgba(31,76,111,.16); padding-top:7px; }
+  .weather-day { display:grid; grid-template-columns:1fr auto; align-items:center; gap:1px 3px; min-width:0; padding:0 3px; text-align:center; }
+  .weather-day + .weather-day { border-left:1px solid rgba(31,76,111,.12); }
+  .weather-day .dn { grid-column:1 / -1; font-size:10px; font-weight:700; color:#335875; text-transform:uppercase; }
+  .weather-day .ic { grid-column:1 / -1; font-size:20px; line-height:1.1; }
+  .weather-day .hi { font-size:12px; font-weight:700; }
+  .weather-day .lo { font-size:11px; color:#496a83; }
+  #weather .weather-loading { margin:auto; color:#335875; font-size:13px; }
 
-  #comingCard { width:196px; padding:10px 12px; box-sizing:border-box; display:flex; flex-direction:column; }
+  #comingCard { flex:.8; min-width:190px; padding:12px 14px; box-sizing:border-box; display:flex; flex-direction:column; background:#f8bd7e; color:#503819; }
   #comingList { flex:1; margin-top:6px; overflow:hidden; }
   #comingList.few { display:flex; flex-direction:column; justify-content:center; }
   .ci { display:flex; align-items:center; height:26px; font-size:13px; font-weight:600; }
   .ci .ico { width:20px; font-size:15px; text-align:center; margin-right:6px; }
   .ci .tx { flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .ci .bd { margin-left:6px; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; background:#232b3b; color:#9fb0c8; white-space:nowrap; }
-  .ci .bd.soon { background:#4da3ff; color:#06121f; }
-  .ci.none { color:#566379; font-weight:400; }
+  .ci .bd { margin-left:6px; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; background:rgba(255,255,255,.42); color:#684b28; white-space:nowrap; }
+  .ci .bd.soon { background:#fffefa; color:#684b28; }
+  .ci.none { color:#80613a; font-weight:400; }
 
-  /* ---- month ---- */
-  #month { flex:1; min-height:0; padding:10px 12px; display:flex; flex-direction:column; }
+  /* ---- calendar ---- */
+  #month { flex:1; min-height:0; padding:10px 12px; display:flex; flex-direction:column; background:#fffefa; }
   #mh { display:flex; align-items:center; margin-bottom:8px; }
-  #mtitle { font-size:26px; font-weight:600; margin-right:14px; }
-  .nb { background:#232b3b; color:#eef2f8; border:0; border-radius:10px; font-size:20px; font-family:inherit; padding:5px 14px; margin-right:8px; }
+  #mtitle { font-size:26px; font-weight:600; margin:0 12px; white-space:nowrap; }
+  .nb { background:#f0eee7; color:#34404b; border:0; border-radius:10px; font-size:20px; font-family:inherit; padding:5px 14px; margin-right:8px; }
   .nb.today { font-size:14px; padding:8px 14px; }
-  #legend { margin-left:auto; font-size:14px; color:#c8d3e4; }
-  #legend span { margin-left:18px; white-space:nowrap; }
-  #legend i { display:inline-block; width:10px; height:10px; border-radius:5px; margin-right:7px; vertical-align:0; }
-  #legend em { font-style:normal; font-size:12px; color:#7d8da6; margin-left:6px; }
+  .nb.view-toggle { font-size:13px; padding:8px 12px; margin-right:0; }
+  #legend { margin-left:auto; font-size:14px; color:#34404b; display:flex; align-items:center; }
+  #legend > span { display:inline-flex; align-items:center; margin-left:16px; white-space:nowrap; }
+  #legend i { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; vertical-align:0; flex:none; }
+  #legend em { font-style:normal; font-size:12px; color:#77808a; margin-left:6px; }
+  .person-avatar { position:relative; display:inline-flex; align-items:center; justify-content:center; flex:none; width:24px; height:24px; border-radius:50%; margin-right:6px; overflow:hidden; color:#fff; font-size:11px; font-weight:700; }
+  .person-avatar img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:50%; }
   #wk { display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); grid-gap:4px; margin-bottom:4px; }
-  #wk div { text-align:center; font-size:11px; font-weight:700; color:#7d8da6; text-transform:uppercase; letter-spacing:1px; }
-  #wk div.we { color:#8f9bd6; }
+  #wk div { text-align:center; font-size:11px; font-weight:700; color:#7b838b; text-transform:uppercase; letter-spacing:1px; }
+  #wk div.we { color:#687f8c; }
   #grid { flex:1; min-height:0; display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); grid-gap:4px; }
-  .cell { background:#0f141e; border-radius:8px; padding:3px 4px; overflow:hidden; min-width:0; min-height:0; }
-  .cell.we { background:rgba(255,255,255,.02); }
-  .cell.out { opacity:.35; }
-  .cell.today { background:#1a2740; box-shadow:inset 0 0 0 2px #4da3ff, 0 0 14px rgba(77,163,255,.35); opacity:1; }
-  .dnum { display:inline-block; min-width:18px; height:18px; line-height:18px; padding:0 3px; box-sizing:border-box; font-size:13px; font-weight:700; color:#c8d3e4; text-align:center; border-radius:9px; margin-bottom:1px; }
-  .cell.today .dnum { background:#4da3ff; color:#06121f; }
-  .cell.hol .dnum { color:#ffb454; }
-  .chip { font-size:12px; line-height:14px; height:14px; margin-bottom:1px; padding:0 3px; border-radius:7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#f1f5fb; }
+  .cell { background:#f5f3ed; border-radius:9px; padding:4px 5px; overflow:hidden; min-width:0; min-height:0; }
+  .cell.we { background:#f0f1ec; }
+  .cell.out { opacity:.4; }
+  .cell.today { background:#edf5fa; box-shadow:inset 0 0 0 2px #63a9d4; opacity:1; }
+  .dnum { display:inline-block; min-width:18px; height:18px; line-height:18px; padding:0 3px; box-sizing:border-box; font-size:13px; font-weight:700; color:#46525d; text-align:center; border-radius:9px; margin-bottom:1px; }
+  .cell.today .dnum { background:#63a9d4; color:#fff; }
+  .cell.hol .dnum { color:#b77527; }
+  .chip { font-size:12px; line-height:14px; height:14px; margin-bottom:1px; padding:0 3px; border-radius:7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#26313b; }
   .chip .dot { display:inline-block; width:6px; height:6px; border-radius:3px; margin-right:3px; vertical-align:1px; }
-  .chip b { font-weight:600; color:#c3cfe2; margin-right:4px; }
-  .chip.hol { background:rgba(255,180,84,.18); color:#ffd9a0; }
-  .today-empty { font-size:11px; color:#7d8da6; padding:2px 5px; }
-  .more { font-size:11px; line-height:13px; color:#7d8da6; padding-left:5px; }
-  #toast { position:absolute; bottom:1px; left:0; right:0; text-align:center; font-size:12px; color:#7d8da6; }
+  .chip b { font-weight:600; color:#3d4b57; margin-right:4px; }
+  .chip.hol { background:#f9e6c8; color:#80531f; }
+  .today-empty { font-size:11px; color:#73818c; padding:2px 5px; }
+  .more { font-size:11px; line-height:13px; color:#73818c; padding-left:5px; }
+  #toast { position:absolute; bottom:1px; left:0; right:0; text-align:center; font-size:12px; color:#596773; }
+
+  @media (max-width:900px) {
+    #app { padding:12px 10px 8px; }
+    #top { height:150px; }
+    #hero { flex:1; padding:10px; }
+    #weather { flex:1.1; padding:8px; }
+    #comingCard { flex:.8; min-width:150px; padding:9px; }
+    #time { font-size:48px; }
+    #date { font-size:12px; }
+    .hsun { font-size:11px; }
+    .hsun .g { margin-right:6px; }
+    #mtitle { font-size:20px; margin:0 8px; }
+    #legend > span { margin-left:8px; font-size:12px; }
+    .person-avatar { width:20px; height:20px; }
+    .nb { margin-right:4px; padding:5px 10px; }
+  }
+  @media (max-width:620px) {
+    #top { height:142px; }
+    #hero { flex:1; }
+    #comingCard { display:none; }
+    #weather { flex:1; margin-right:0; }
+    .weather-temperature { font-size:30px; }
+    .weather-icon { font-size:32px; }
+    #legend em { display:none; }
+    #legend > span { margin-left:5px; }
+    #mh { flex-wrap:wrap; }
+    #mtitle { font-size:18px; }
+  }
+  @media (max-height:600px) {
+    #app { padding-top:8px; padding-bottom:6px; }
+    #top { height:108px; margin-bottom:6px; }
+    #hero { padding:8px 12px 7px; }
+    #time { font-size:42px; }
+    #date { font-size:11px; margin-top:2px; }
+    .hsun { padding-top:4px; font-size:10px; }
+    .hsun .g { margin-right:6px; }
+    #weather { padding:6px 10px; }
+    .weather-state { display:none; }
+    .weather-temperature { font-size:24px; }
+    .weather-icon { font-size:26px; }
+    .weather-forecast { padding-top:3px; }
+    .weather-day .dn { font-size:9px; }
+    .weather-day .ic { font-size:14px; }
+    .weather-day .hi, .weather-day .lo { font-size:9px; }
+    #comingCard { padding:8px 10px; }
+    #month { padding:6px 8px; }
+    #mh { margin-bottom:4px; }
+    #mtitle { font-size:20px; }
+    .nb { padding:4px 9px; }
+    .nb.today, .nb.view-toggle { padding:6px 10px; }
+    #wk { grid-gap:3px; margin-bottom:3px; }
+    #grid { grid-gap:3px; }
+    .cell { padding:2px 3px; }
+    .dnum { height:16px; line-height:16px; font-size:12px; }
+    .chip { height:12px; line-height:12px; font-size:10px; padding:0 2px; }
+    .chip .dot { width:5px; height:5px; margin-right:2px; }
+    .chip b { margin-right:2px; }
+    .today-empty { font-size:10px; }
+  }
 </style>
 </head>
 <body>
@@ -89,11 +153,6 @@
     <div id="hero" class="card">
       <div class="hrow">
         <div class="hl"><div id="time">--:--</div><div id="date"></div></div>
-        <div class="hr">
-          <div class="cur"><span id="curIcon"></span><span id="curTemp">--</span></div>
-          <div class="cm" id="curCity"></div>
-          <div class="cm" id="curRange"></div>
-        </div>
       </div>
       <div class="hsun">
         <span class="g">&#127749; <b id="sunrise">--:--</b></span>
@@ -101,7 +160,7 @@
         <span class="g moon"><span id="moonIcon"></span><span id="moonName"></span></span>
       </div>
     </div>
-    <div id="weather" class="card"><div style="margin:auto;color:#566379">Loading weather…</div></div>
+    <div id="weather" class="card"><div class="weather-loading">Loading weather…</div></div>
     <div id="comingCard" class="card">
       <div class="lab">Coming up</div>
       <div id="comingList"></div>
@@ -113,6 +172,7 @@
       <button class="nb" id="next">&#8250;</button>
       <button class="nb today" id="todayBtn">Today</button>
       <div id="mtitle"></div>
+      <button class="nb view-toggle" id="viewBtn" aria-label="Switch to week view">Week</button>
       <div id="legend"></div>
     </div>
     <div id="wk"></div>
@@ -130,11 +190,12 @@ var CONFIG = {
   fahrenheit: false,
 
   /* Calendars: paste each person's address into "ics" (the Cloudflare relay address,
-     starting with https://). Leave "" to show demo events for that person. */
+     starting with https://). Leave "" to show demo events for that person.
+     Set avatar to an image path (for example "images/nini.jpg") or image URL. */
   people: [
-    { name: "Giorgi", color: "#4da3ff", ics: "https://family-calendar.giorgisoselia1.workers.dev/?p=giorgi" },
-    { name: "Nini",   color: "#ff7aa8", ics: "https://family-calendar.giorgisoselia1.workers.dev/?p=nini" },
-    { name: "Sandro", color: "#5fd68a", ics: "https://family-calendar.giorgisoselia1.workers.dev/?p=sandro" }
+    { name: "Giorgi", color: "#4da3ff", avatar: "https://raw.githubusercontent.com/Madman3332/Family-dashboard/main/Nini.jpg", ics: "https://family-calendar.giorgisoselia1.workers.dev/?p=giorgi" },
+    { name: "Nini",   color: "#ff7aa8", avatar: "https://raw.githubusercontent.com/Madman3332/Family-dashboard/main/Giorgi.jpg", ics: "https://family-calendar.giorgisoselia1.workers.dev/?p=nini" },
+    { name: "Sandro", color: "#5fd68a", avatar: "https://raw.githubusercontent.com/Madman3332/Family-dashboard/main/Sandro.jpg", ics: "https://family-calendar.giorgisoselia1.workers.dev/?p=sandro" }
   ],
   /* Only needed if you use a relay that takes the calendar address as an extra part,
      e.g. "https://my-relay.example.com/?url=". Normally leave empty. */
@@ -169,6 +230,8 @@ function startOfDay(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate
 function addDays(d,n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()+n, d.getHours(), d.getMinutes()); }
 function sameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function escAttr(s){ return esc(s).replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+function startOfWeek(d){ var out=startOfDay(d); out.setDate(out.getDate()-(out.getDay()+6)%7); return out; }
 function hexA(h,a){ var n=parseInt(h.replace("#",""),16); return "rgba("+((n>>16)&255)+","+((n>>8)&255)+","+(n&255)+","+a+")"; }
 function toast(msg){ $("toast").textContent = msg||""; if(msg){ setTimeout(function(){ if($("toast").textContent===msg) $("toast").textContent=""; }, 6000);} }
 
@@ -214,30 +277,44 @@ function wIcon(c){
   if(c>=95) return "⛈️";
   return "☁️";
 }
+function wLabel(c){
+  if(c===0) return "Clear";
+  if(c===1) return "Mostly clear";
+  if(c===2) return "Partly cloudy";
+  if(c===3) return "Cloudy";
+  if(c===45||c===48) return "Fog";
+  if(c>=51&&c<=57) return "Drizzle";
+  if(c>=61&&c<=67) return "Rain";
+  if(c>=71&&c<=77) return "Snow";
+  if(c>=80&&c<=82) return "Showers";
+  if(c===85||c===86) return "Snow showers";
+  if(c>=95) return "Thunderstorm";
+  return "Cloudy";
+}
 function temp(t){ return Math.round(t)+"°"; }
 function loadWeather(){
   var u = "https://api.open-meteo.com/v1/forecast?latitude="+CONFIG.lat+"&longitude="+CONFIG.lon+
     "&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset"+
-    "&timezone=auto&forecast_days=5"+(CONFIG.fahrenheit?"&temperature_unit=fahrenheit":"");
+    "&timezone=auto&forecast_days=3"+(CONFIG.fahrenheit?"&temperature_unit=fahrenheit":"");
   var x = new XMLHttpRequest();
   x.open("GET", u, true);
   x.onload = function(){
     try {
       var j = JSON.parse(x.responseText), d = j.daily, h = "";
-      for(var i=0;i<d.time.length;i++){
+      h += '<div class="weather-current"><div><div class="weather-city">'+esc(CONFIG.city)+'</div>'+
+           '<div class="weather-state">'+wLabel(j.current.weather_code)+'</div>'+
+           '<div class="weather-temperature">'+temp(j.current.temperature_2m)+'</div>'+
+           '<div class="weather-range">H '+temp(d.temperature_2m_max[0])+' · L '+temp(d.temperature_2m_min[0])+'</div></div>'+
+           '<div class="weather-icon">'+wIcon(j.current.weather_code)+'</div></div><div class="weather-forecast">';
+      for(var i=0;i<Math.min(3,d.time.length);i++){
         var p = d.time[i].split("-");
         var dt = new Date(+p[0], +p[1]-1, +p[2]);
-        h += '<div class="day'+(i===0?' today':'')+'"><div class="dn">'+(i===0?"Today":DAYS[dt.getDay()])+'</div>'+
+        h += '<div class="weather-day"><div class="dn">'+(i===0?"Today":DAYS[dt.getDay()])+'</div>'+
              '<div class="ic">'+wIcon(d.weather_code[i])+'</div>'+
              '<div class="hi">'+temp(d.temperature_2m_max[i])+'</div>'+
-             '<div class="lo">'+temp(d.temperature_2m_min[i])+'</div>'+
-             '<div class="pp">&#128167; '+(d.precipitation_probability_max[i]||0)+'%</div></div>';
+             '<div class="lo">'+temp(d.temperature_2m_min[i])+'</div></div>';
       }
-      $("weather").innerHTML = h;
-      $("curIcon").textContent = wIcon(j.current.weather_code);
-      $("curTemp").textContent = temp(j.current.temperature_2m);
-      $("curCity").textContent = CONFIG.city;
-      $("curRange").textContent = "H "+temp(d.temperature_2m_max[0])+"   L "+temp(d.temperature_2m_min[0]);
+      $("weather").innerHTML = h+"</div>";
       $("sunrise").textContent = d.sunrise[0].split("T")[1];
       $("sunset").textContent = d.sunset[0].split("T")[1];
     } catch(e){ toast("Weather unavailable"); }
@@ -383,15 +460,21 @@ function renderComing(){
 
 /* ---------- Month view ---------- */
 var EVENTS = [], DEMO = [], LOADERR = [], now0 = new Date();
-var viewY = now0.getFullYear(), viewM = now0.getMonth(), idleTimer = null;
+var viewY = now0.getFullYear(), viewM = now0.getMonth(), calendarView = "month";
+var monthReturnY = viewY, monthReturnM = viewM;
+var weekStart = startOfWeek(now0), idleTimer = null;
 
 function renderLegend(){
   var h = "";
   for(var i=0;i<CONFIG.people.length;i++){
-    var c = CONFIG.people[i].color, st = LOADERR[i] ? "error" : (DEMO[i] ? "demo" : "");
-    h += '<span><i style="background:'+c+';box-shadow:0 0 6px '+c+'"></i>'+esc(CONFIG.people[i].name)+(st?'<em>'+st+'</em>':'')+'</span>';
+    var person = CONFIG.people[i], c = person.color, st = LOADERR[i] ? "error" : (DEMO[i] ? "demo" : "");
+    var image = person.avatar ? '<img src="'+escAttr(person.avatar)+'" alt="">' : "";
+    h += '<span><span class="person-avatar" style="background:'+c+'">'+esc(person.name.charAt(0).toUpperCase())+image+'</span>'+
+         esc(person.name)+(st?'<em>'+esc(st)+'</em>':'')+'</span>';
   }
   $("legend").innerHTML = h;
+  var images = $("legend").getElementsByTagName("img");
+  for(var j=0;j<images.length;j++) images[j].onerror = function(){ this.style.display="none"; };
 }
 function relevant(ev, rs, re){
   if(ev.cancelled) return false;
@@ -403,13 +486,18 @@ function renderMonth(){
   var first = new Date(viewY, viewM, 1);
   var offset = (first.getDay()+6)%7;                 /* week starts on Monday */
   var total = new Date(viewY, viewM+1, 0).getDate();
-  var rows = Math.ceil((offset+total)/7);
-  var gridStart = new Date(viewY, viewM, 1-offset);
-  var gridEnd = new Date(viewY, viewM, 1-offset+rows*7, 0, 0);
-  var maxChips = rows>=6 ? 3 : 4;
+  var rows = calendarView==="week" ? 1 : Math.ceil((offset+total)/7);
+  var gridStart = calendarView==="week" ? weekStart : new Date(viewY, viewM, 1-offset);
+  var gridEnd = addDays(gridStart, rows*7);
+  var maxChips = calendarView==="week" ? 30 : (rows>=6 ? 3 : 4);
   var today = new Date();
 
-  $("mtitle").textContent = MONTHS[viewM]+" "+viewY;
+  if(calendarView==="week"){
+    var weekEnd = addDays(weekStart,6);
+    $("mtitle").textContent = MONTHS[weekStart.getMonth()]+" "+weekStart.getDate()+" – "+
+      (weekStart.getMonth()===weekEnd.getMonth() ? weekEnd.getDate() : MONTHS[weekEnd.getMonth()]+" "+weekEnd.getDate())+
+      ", "+weekEnd.getFullYear();
+  } else $("mtitle").textContent = MONTHS[viewM]+" "+viewY;
 
   var wk = "", names = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], i, j, p;
   for(i=0;i<7;i++) wk += '<div'+(i>=5?' class="we"':'')+'>'+names[i]+'</div>';
@@ -425,7 +513,7 @@ function renderMonth(){
 
   var g = "";
   for(i=0;i<rows*7;i++){
-    var day = new Date(viewY, viewM, 1-offset+i);
+    var day = addDays(gridStart,i);
     var list = [];
     for(p=0;p<rel.length;p++){
       for(j=0;j<rel[p].length;j++){
@@ -437,7 +525,7 @@ function renderMonth(){
       return (a.ev.start.getHours()*60+a.ev.start.getMinutes())-(b.ev.start.getHours()*60+b.ev.start.getMinutes());
     });
     var hn = holidaysOn(day), slots = maxChips - (hn.length ? 1 : 0), isToday = sameDay(day, today);
-    var cls = "cell" + (day.getMonth()!==viewM ? " out" : "") + (i%7>=5 ? " we" : "") + (isToday ? " today" : "") + (hn.length ? " hol" : "");
+    var cls = "cell" + (calendarView==="month" && day.getMonth()!==viewM ? " out" : "") + (i%7>=5 ? " we" : "") + (isToday ? " today" : "") + (hn.length ? " hol" : "");
     g += '<div class="'+cls+'"><div class="dnum">'+day.getDate()+'</div>';
     if(hn.length) g += '<div class="chip hol"><i class="dot" style="background:#ffb454;box-shadow:0 0 6px #ffb454"></i>'+esc(hn.join(" · "))+'</div>';
     if(isToday && !list.length && !hn.length) g += '<div class="today-empty">No events today</div>';
@@ -457,17 +545,46 @@ function renderMonth(){
   renderLegend();
   renderComing();
 }
-function goMonth(delta){
-  if(delta===0){ var n=new Date(); viewY=n.getFullYear(); viewM=n.getMonth(); }
-  else { viewM += delta; if(viewM<0){ viewM=11; viewY--; } if(viewM>11){ viewM=0; viewY++; } }
+function goPeriod(delta){
+  if(calendarView==="week"){
+    weekStart = delta===0 ? startOfWeek(new Date()) : addDays(weekStart,delta*7);
+    viewY=weekStart.getFullYear(); viewM=weekStart.getMonth();
+    monthReturnY=viewY; monthReturnM=viewM;
+  } else if(delta===0){
+    var n=new Date(); viewY=n.getFullYear(); viewM=n.getMonth();
+  } else {
+    viewM += delta; if(viewM<0){ viewM=11; viewY--; } if(viewM>11){ viewM=0; viewY++; }
+  }
   renderMonth();
-  clearTimeout(idleTimer);
-  var n2 = new Date();
-  if(viewY!==n2.getFullYear() || viewM!==n2.getMonth()) idleTimer = setTimeout(function(){ goMonth(0); }, 120000);
+  resetIdleTimer();
 }
-$("prev").onclick = function(){ goMonth(-1); };
-$("next").onclick = function(){ goMonth(1); };
-$("todayBtn").onclick = function(){ goMonth(0); };
+function resetIdleTimer(){
+  clearTimeout(idleTimer);
+  var n2 = new Date(), away;
+  if(calendarView==="week") away=!sameDay(weekStart,startOfWeek(n2));
+  else away=viewY!==n2.getFullYear() || viewM!==n2.getMonth();
+  if(away) idleTimer = setTimeout(function(){ goPeriod(0); }, 120000);
+}
+$("prev").onclick = function(){ goPeriod(-1); };
+$("next").onclick = function(){ goPeriod(1); };
+$("todayBtn").onclick = function(){ goPeriod(0); };
+$("viewBtn").onclick = function(){
+  if(calendarView==="month"){
+    calendarView="week";
+    var today=new Date(), anchor=viewY===today.getFullYear() && viewM===today.getMonth() ? today : new Date(viewY,viewM,1);
+    weekStart=startOfWeek(anchor);
+    monthReturnY=viewY; monthReturnM=viewM;
+    $("viewBtn").textContent="Month";
+    $("viewBtn").setAttribute("aria-label","Switch to month view");
+  } else {
+    calendarView="month";
+    viewY=monthReturnY; viewM=monthReturnM;
+    $("viewBtn").textContent="Week";
+    $("viewBtn").setAttribute("aria-label","Switch to week view");
+  }
+  renderMonth();
+  resetIdleTimer();
+};
 
 function loadCal(idx){
   var p = CONFIG.people[idx];
@@ -493,7 +610,7 @@ setInterval(loadWeather, 30*60*1000);
 setInterval(loadAllCals, 10*60*1000);
 /* at midnight: jump back to the current month and refresh */
 var lastDay = new Date().getDate();
-setInterval(function(){ var n=new Date().getDate(); if(n!==lastDay){ lastDay=n; goMonth(0); loadAllCals(); loadWeather(); } }, 60*1000);
+setInterval(function(){ var n=new Date().getDate(); if(n!==lastDay){ lastDay=n; goPeriod(0); loadAllCals(); loadWeather(); } }, 60*1000);
 document.addEventListener("touchmove", function(e){ e.preventDefault(); }, { passive:false });
 </script>
 </body>
