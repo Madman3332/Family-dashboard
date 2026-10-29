@@ -16,7 +16,7 @@
   .card { background:#fffefa; border-radius:18px; }
   .lab { font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#77808a; font-weight:700; }
 
-  /* ---- top row: hero | forecast | coming up ---- */
+  /* ---- top row: hero | forecast | today's events ---- */
   #top { display:flex; align-items:stretch; height:174px; margin-bottom:10px; }
 
   #hero { flex:1.25; min-width:0; padding:14px 18px 12px 18px; margin-right:10px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; }
@@ -45,14 +45,24 @@
   .weather-day .lo { font-size:11px; color:#496a83; }
   #weather .weather-loading { margin:auto; color:#335875; font-size:13px; }
 
-  #comingCard { flex:.8; min-width:190px; padding:12px 14px; box-sizing:border-box; display:flex; flex-direction:column; background:#f8bd7e; color:#503819; }
-  #comingList { flex:1; margin-top:6px; overflow:hidden; }
-  #comingList.few { display:flex; flex-direction:column; justify-content:center; }
-  .ci { display:flex; align-items:center; height:26px; font-size:13px; font-weight:600; }
-  .ci .ico { width:20px; font-size:15px; text-align:center; margin-right:6px; }
-  .ci .tx { flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .ci .bd { margin-left:6px; font-size:11px; font-weight:700; padding:2px 7px; border-radius:10px; background:rgba(255,255,255,.42); color:#684b28; white-space:nowrap; }
-  .ci .bd.soon { background:#fffefa; color:#684b28; }
+  #todayCard { flex:.8; min-width:230px; padding:10px 12px; box-sizing:border-box; display:flex; flex-direction:column; background:#fffefa; }
+  #todayHeading { margin-bottom:5px; }
+  #todayList { flex:1; min-height:0; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; }
+  .today-person { display:flex; align-items:center; min-height:0; flex:1; gap:8px; overflow:hidden; }
+  .today-avatar { position:relative; display:inline-flex; align-items:center; justify-content:center; flex:none; width:38px; height:38px; border-radius:50%; overflow:hidden; color:#fff; font-size:14px; font-weight:700; }
+  .today-avatar img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .today-details { flex:1; min-width:0; overflow:hidden; }
+  .today-name { display:block; font-size:12px; line-height:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#34404b; }
+  .today-status { font-size:9px; font-weight:500; color:#a16a38; }
+  .today-events { font-size:11px; line-height:13px; color:#697581; max-height:26px; overflow:hidden; overflow-wrap:anywhere; }
+  #comingUp { display:flex; align-items:center; gap:8px; margin-left:auto; min-width:0; }
+  #comingUp .lab { white-space:nowrap; }
+  #comingList { display:flex; align-items:center; gap:8px; flex:1; min-width:0; overflow:hidden; }
+  .ci { display:flex; align-items:center; min-width:0; font-size:11px; font-weight:600; }
+  .ci .ico { flex:none; font-size:12px; text-align:center; margin-right:3px; }
+  .ci .tx { min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ci .bd { margin-left:4px; font-size:10px; font-weight:700; padding:2px 5px; border-radius:10px; background:#f8bd7e; color:#684b28; white-space:nowrap; }
+  .ci .bd.soon { background:#f5e2c9; color:#684b28; }
   .ci.none { color:#80613a; font-weight:400; }
 
   /* ---- calendar ---- */
@@ -62,12 +72,6 @@
   .nb { background:#f0eee7; color:#34404b; border:0; border-radius:10px; font-size:20px; font-family:inherit; padding:5px 14px; margin-right:8px; }
   .nb.today { font-size:14px; padding:8px 14px; }
   .nb.view-toggle { font-size:13px; padding:8px 12px; margin-right:0; }
-  #legend { margin-left:auto; font-size:14px; color:#34404b; display:flex; align-items:center; }
-  #legend > span { display:inline-flex; align-items:center; margin-left:16px; white-space:nowrap; }
-  #legend i { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; vertical-align:0; flex:none; }
-  #legend em { font-style:normal; font-size:12px; color:#77808a; margin-left:6px; }
-  .person-avatar { position:relative; display:inline-flex; align-items:center; justify-content:center; flex:none; width:24px; height:24px; border-radius:50%; margin-right:6px; overflow:hidden; color:#fff; font-size:11px; font-weight:700; }
-  .person-avatar img { position:absolute; top:0; right:0; bottom:0; left:0; width:100%; height:100%; object-fit:cover; border-radius:50%; }
   #wk { display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); grid-gap:4px; margin-bottom:4px; }
   #wk div { text-align:center; font-size:11px; font-weight:700; color:#7b838b; text-transform:uppercase; letter-spacing:1px; }
   #wk div.we { color:#687f8c; }
@@ -92,25 +96,25 @@
     #top { height:150px; }
     #hero { flex:1; padding:10px; }
     #weather { flex:1.1; padding:8px; }
-    #comingCard { flex:.8; min-width:150px; padding:9px; }
+    #todayCard { flex:.8; min-width:210px; padding:8px; }
+    .today-avatar { width:34px; height:34px; }
+    #comingList .ci:nth-child(n+3) { display:none; }
     #time { font-size:48px; }
     #date { font-size:12px; }
     .hsun { font-size:11px; }
     .hsun .g { margin-right:6px; }
     #mtitle { font-size:20px; margin:0 8px; }
-    #legend > span { margin-left:8px; font-size:12px; }
-    .person-avatar { width:20px; height:20px; }
     .nb { margin-right:4px; padding:5px 10px; }
   }
   @media (max-width:620px) {
-    #top { height:142px; }
-    #hero { flex:1; }
-    #comingCard { display:none; }
-    #weather { flex:1; margin-right:0; }
+    #top { height:260px; flex-wrap:wrap; }
+    #hero, #weather { flex:1 1 calc(50% - 5px); height:142px; }
+    #todayCard { display:flex; flex:1 0 100%; min-width:0; height:112px; padding:6px 10px; }
+    .today-avatar { width:26px; height:26px; }
+    #weather { margin-right:0; }
     .weather-temperature { font-size:30px; }
     .weather-icon { font-size:32px; }
-    #legend em { display:none; }
-    #legend > span { margin-left:5px; }
+    #comingUp { flex:1 0 100%; margin-left:0; }
     #mh { flex-wrap:wrap; }
     #mtitle { font-size:18px; }
   }
@@ -118,6 +122,7 @@
     #app { padding-top:8px; padding-bottom:6px; }
     #top { height:108px; margin-bottom:6px; }
     #hero { padding:8px 12px 7px; }
+    #hero, #weather { height:108px; }
     #time { font-size:42px; }
     #date { font-size:11px; margin-top:2px; }
     .hsun { padding-top:4px; font-size:10px; }
@@ -130,7 +135,13 @@
     .weather-day .dn { font-size:9px; }
     .weather-day .ic { font-size:14px; }
     .weather-day .hi, .weather-day .lo { font-size:9px; }
-    #comingCard { padding:8px 10px; }
+    #todayCard { display:none; }
+    #todayCard { padding:6px 8px; }
+    #todayHeading { margin-bottom:2px; font-size:9px; }
+    .today-person { gap:6px; }
+    .today-avatar { width:26px; height:26px; font-size:11px; }
+    .today-name { font-size:11px; line-height:13px; }
+    .today-events { font-size:10px; line-height:11px; max-height:11px; }
     #month { padding:6px 8px; }
     #mh { margin-bottom:4px; }
     #mtitle { font-size:20px; }
@@ -161,9 +172,9 @@
       </div>
     </div>
     <div id="weather" class="card"><div class="weather-loading">Loading weather…</div></div>
-    <div id="comingCard" class="card">
-      <div class="lab">Coming up</div>
-      <div id="comingList"></div>
+    <div id="todayCard" class="card">
+      <div id="todayHeading" class="lab">Today's events</div>
+      <div id="todayList"></div>
     </div>
   </div>
   <div id="month" class="card">
@@ -173,7 +184,10 @@
       <button class="nb today" id="todayBtn">Today</button>
       <div id="mtitle"></div>
       <button class="nb view-toggle" id="viewBtn" aria-label="Switch to week view">Week</button>
-      <div id="legend"></div>
+      <div id="comingUp">
+        <div class="lab">Coming up</div>
+        <div id="comingList"></div>
+      </div>
     </div>
     <div id="wk"></div>
     <div id="grid"></div>
@@ -437,7 +451,7 @@ function isBirthday(title){
   for(var i=0;i<w.length;i++) if(t.indexOf(w[i].toLowerCase())>=0) return true;
   return false;
 }
-/* "Coming up" card: the next few holidays and birthdays in the next 30 days */
+/* Upcoming holidays and birthdays in the next 30 days */
 function renderComing(){
   var el = $("comingList"), today = startOfDay(new Date()), end = addDays(today, 31), items = [], bd = [], i, j, k, p;
   for(p=0;p<CONFIG.people.length;p++){
@@ -454,7 +468,6 @@ function renderComing(){
     var n = items[i].n, label = n===0 ? "Today" : n===1 ? "Tomorrow" : n+" d";
     h += '<div class="ci"><span class="ico">'+items[i].ico+'</span><span class="tx">'+esc(items[i].text)+'</span><span class="bd'+(n<=1?' soon':'')+'">'+label+'</span></div>';
   }
-  el.className = items.length <= 2 ? "few" : "";
   el.innerHTML = h || '<div class="ci none">Nothing in the next 30 days</div>';
 }
 
@@ -464,16 +477,37 @@ var viewY = now0.getFullYear(), viewM = now0.getMonth(), calendarView = "month";
 var monthReturnY = viewY, monthReturnM = viewM;
 var weekStart = startOfWeek(now0), idleTimer = null;
 
-function renderLegend(){
+function renderTodayEvents(){
   var h = "";
   for(var i=0;i<CONFIG.people.length;i++){
-    var person = CONFIG.people[i], c = person.color, st = LOADERR[i] ? "error" : (DEMO[i] ? "demo" : "");
+    var person = CONFIG.people[i], c = person.color, today = startOfDay(new Date()), events = [];
     var image = person.avatar ? '<img src="'+escAttr(person.avatar)+'" alt="">' : "";
-    h += '<span><span class="person-avatar" style="background:'+c+'">'+esc(person.name.charAt(0).toUpperCase())+image+'</span>'+
-         esc(person.name)+(st?'<em>'+esc(st)+'</em>':'')+'</span>';
+    var src = EVENTS[i] || [];
+    for(var j=0;j<src.length;j++) if(occursOn(src[j], today)) events.push(src[j]);
+    events.sort(function(a,b){
+      if(a.allDay!==b.allDay) return a.allDay?-1:1;
+      return (a.start.getHours()*60+a.start.getMinutes())-(b.start.getHours()*60+b.start.getMinutes());
+    });
+    var status = LOADERR[i] ? " · error" : (DEMO[i] ? " · demo" : "");
+    var eventText = "";
+    if(LOADERR[i]) eventText = "Calendar unavailable";
+    else if(!events.length) eventText = "No events today";
+    else {
+      var shown = Math.min(events.length, 2), parts = [];
+      for(j=0;j<shown;j++){
+        var title = events[j].title || "(no title)";
+        parts.push((events[j].allDay ? "" : pad(events[j].start.getHours())+":"+pad(events[j].start.getMinutes())+" · ")+
+          (isBirthday(title) ? "🎂 " : "")+title);
+      }
+      if(events.length>shown) parts.push("+"+(events.length-shown)+" more");
+      eventText = parts.join(" · ");
+    }
+    h += '<div class="today-person"><span class="today-avatar" style="background:'+c+'">'+esc(person.name.charAt(0).toUpperCase())+image+'</span>'+
+         '<div class="today-details"><span class="today-name">'+esc(person.name)+'<span class="today-status">'+esc(status)+'</span></span>'+
+         '<div class="today-events">'+esc(eventText)+'</div></div></div>';
   }
-  $("legend").innerHTML = h;
-  var images = $("legend").getElementsByTagName("img");
+  $("todayList").innerHTML = h;
+  var images = $("todayList").getElementsByTagName("img");
   for(var j=0;j<images.length;j++) images[j].onerror = function(){ this.style.display="none"; };
 }
 function relevant(ev, rs, re){
@@ -542,7 +576,7 @@ function renderMonth(){
   var grid = $("grid");
   grid.style.webkitGridTemplateRows = grid.style.gridTemplateRows = "repeat("+rows+", minmax(0,1fr))";
   grid.innerHTML = g;
-  renderLegend();
+  renderTodayEvents();
   renderComing();
 }
 function goPeriod(delta){
