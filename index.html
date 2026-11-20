@@ -59,7 +59,7 @@
   #todayCard { flex:.8; min-width:230px; padding:10px 12px; box-sizing:border-box; display:flex; flex-direction:column; background:#fffefa; border-top:3px solid var(--cranberry); }
   #todayHeading { margin-bottom:5px; color:var(--cranberry); }
   #todayList { flex:1; min-height:0; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; }
-  .today-person { display:flex; align-items:center; min-height:0; flex:1; gap:8px; overflow:hidden; }
+  .today-person { display:flex; align-items:center; min-height:0; flex:1; gap:12px; overflow:hidden; }
   .today-avatar { position:relative; display:inline-flex; align-items:center; justify-content:center; flex:none; width:38px; height:38px; border-radius:50%; overflow:hidden; color:#fff; font-size:14px; font-weight:700; }
   .today-avatar img { position:absolute; top:0; right:0; bottom:0; left:0; display:block; width:100%; height:100%; object-fit:cover; border-radius:50%; }
   .today-details { flex:1; min-width:0; overflow:hidden; }
@@ -123,6 +123,7 @@
     #hero { height:174px; }
     #todayCard { display:flex; flex:1 0 100%; min-width:0; height:112px; padding:6px 10px; }
     #todayList { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-rows:repeat(2,minmax(0,1fr)); gap:2px 8px; }
+    .today-person { gap:10px; }
     .today-avatar { width:26px; height:26px; }
     #christmasCountdown { white-space:normal; gap:5px; font-size:10px; }
     #christmasCountdown span:last-child { min-width:0; }
@@ -160,7 +161,7 @@
     .hsun .moon { font-size:8px; }
     #todayCard { padding:6px 8px; }
     #todayHeading { margin-bottom:2px; font-size:9px; }
-    .today-person { gap:6px; }
+    .today-person { gap:10px; }
     .today-avatar { width:26px; height:26px; font-size:11px; }
     .today-name { font-size:11px; line-height:13px; }
     .today-events { font-size:10px; line-height:11px; max-height:11px; }
