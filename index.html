@@ -66,8 +66,8 @@
   .today-name { display:block; font-size:12px; line-height:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#34404b; }
   .today-status { font-size:9px; font-weight:500; color:#a16a38; }
   .today-events { font-size:11px; line-height:13px; color:#697581; max-height:26px; overflow:hidden; overflow-wrap:anywhere; }
-  #comingUp { display:flex; align-items:center; gap:8px; margin-left:auto; min-width:0; }
-  #comingUp .lab { white-space:nowrap; }
+  #comingUp { display:flex; align-items:center; gap:8px; margin-left:auto; min-width:0; color:#fffefa; }
+  #comingUp .lab { white-space:nowrap; color:#d5e5dc; }
   #comingList { display:flex; align-items:center; gap:8px; flex:1; min-width:0; overflow:hidden; }
   .ci { display:flex; align-items:center; min-width:0; font-size:11px; font-weight:600; }
   .ci .tx { min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -77,15 +77,15 @@
 
   /* ---- calendar ---- */
   #month { position:relative; flex:1; min-height:0; padding:10px 12px; display:flex; flex-direction:column;
-    background:linear-gradient(rgba(255,254,250,.62),rgba(255,254,250,.62)),url("calendar-forest.png") center/cover no-repeat; }
+    background:linear-gradient(135deg,var(--pine),var(--pine-dark)); }
   #mh { display:flex; align-items:center; margin-bottom:8px; }
-  #mtitle { font-size:26px; font-weight:600; margin:0 12px; white-space:nowrap; color:var(--pine); }
+  #mtitle { font-size:26px; font-weight:600; margin:0 12px; white-space:nowrap; color:var(--snow); }
   .nb { background:#e9efe9; color:var(--pine); border:0; border-radius:10px; font-size:20px; font-family:inherit; padding:5px 14px; margin-right:8px; }
   .nb.today { font-size:14px; padding:8px 14px; }
   .nb.view-toggle { font-size:13px; padding:8px 12px; margin-right:0; }
   #wk { display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); grid-gap:4px; margin-bottom:4px; }
-  #wk div { text-align:center; font-size:11px; font-weight:700; color:#7b838b; text-transform:uppercase; letter-spacing:1px; }
-  #wk div.we { color:#687f8c; }
+  #wk div { text-align:center; font-size:11px; font-weight:700; color:#d5e5dc; text-transform:uppercase; letter-spacing:1px; }
+  #wk div.we { color:#f4d893; }
   #grid { flex:1; min-height:0; display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); grid-gap:4px; }
   .cell { background:rgba(241,245,240,.84); border-radius:9px; padding:4px 5px; overflow:hidden; min-width:0; min-height:0; }
   .cell.we { background:rgba(237,240,233,.88); }
@@ -122,6 +122,7 @@
     #hero, #weather { flex:1 1 calc(50% - 5px); height:142px; }
     #hero { height:174px; }
     #todayCard { display:flex; flex:1 0 100%; min-width:0; height:112px; padding:6px 10px; }
+    #todayList { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-rows:repeat(2,minmax(0,1fr)); gap:2px 8px; }
     .today-avatar { width:26px; height:26px; }
     #christmasCountdown { white-space:normal; gap:5px; font-size:10px; }
     #christmasCountdown span:last-child { min-width:0; }
@@ -237,7 +238,8 @@ var CONFIG = {
   people: [
     { name: "Giorgi", color: "#4da3ff", avatar: "Giorgi.jpg", ics: "https://family-calendar.giorgisoselia1.workers.dev/?p=giorgi" },
     { name: "Nini",   color: "#ff7aa8", avatar: "Nini.jpg", ics: "https://family-calendar.giorgisoselia1.workers.dev/?p=nini" },
-    { name: "Sandro", color: "#5fd68a", avatar: "Sandro.jpg", ics: "https://family-calendar.giorgisoselia1.workers.dev/?p=sandro" }
+    { name: "Sandro", color: "#5fd68a", avatar: "Sandro.jpg", ics: "https://family-calendar.giorgisoselia1.workers.dev/?p=sandro" },
+    { name: "Nico",   color: "#a486d8", avatar: "Nico.jpg", ics: "https://family-calendar.giorgisoselia1.workers.dev/?p=nico" }
   ],
   /* Only needed if you use a relay that takes the calendar address as an extra part,
      e.g. "https://my-relay.example.com/?url=". Normally leave empty. */
