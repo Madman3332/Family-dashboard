@@ -8,34 +8,45 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Home">
 <style>
+  :root {
+    --pine:#174b3a;
+    --pine-dark:#103a2f;
+    --cranberry:#a33d48;
+    --gold:#e4bd70;
+    --snow:#fffefa;
+    --page:#e8eee7;
+  }
   /* Type scale: 60 clock / 26 titles / 20 key numbers / 14 body / 13 small / 12 calendar pills / 11 labels */
-  html, body { margin:0; padding:0; height:100%; background:#eeecdf; color:#26313b;
+  html, body { margin:0; padding:0; height:100%; background:var(--page); color:#263a32;
     font-family:-apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif; overflow:hidden;
     -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent; }
   #app { position:absolute; top:0; left:0; right:0; bottom:0; padding:22px 16px 12px 16px; display:flex; flex-direction:column; }
-  .card { background:#fffefa; border-radius:18px; }
-  .lab { font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#77808a; font-weight:700; }
+  .card { background:var(--snow); border:1px solid rgba(23,75,58,.12); border-radius:18px; box-shadow:0 3px 12px rgba(27,59,45,.06); }
+  .lab { font-size:11px; letter-spacing:1px; text-transform:uppercase; color:#587364; font-weight:700; }
 
   /* ---- top row: hero | forecast | today's events ---- */
-  #top { display:flex; align-items:stretch; height:174px; margin-bottom:10px; }
+  #top { display:flex; align-items:stretch; height:200px; margin-bottom:10px; }
 
-  #hero { flex:1.25; min-width:0; padding:14px 18px 12px 18px; margin-right:10px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; }
+  #hero { flex:1.25; min-width:0; padding:14px 18px 12px 18px; margin-right:10px; box-sizing:border-box; display:flex; flex-direction:column; justify-content:space-between; background:linear-gradient(135deg,var(--pine),var(--pine-dark)); color:#fffefa; }
   .hrow { display:flex; align-items:flex-start; justify-content:space-between; }
   #time { font-size:60px; font-weight:200; letter-spacing:-2px; line-height:1; }
-  #date { font-size:14px; color:#697581; margin-top:6px; }
-  .hsun { display:flex; align-items:center; border-top:1px solid #e8e5dc; padding-top:7px; font-size:14px; white-space:nowrap; }
+  #date { font-size:14px; color:#d5e5dc; margin-top:6px; }
+  #christmasCountdown { display:flex; align-items:center; gap:9px; margin-top:5px; color:#f4d893; font-size:11px; font-weight:600; white-space:nowrap; }
+  #christmasTree { display:block; flex:none; width:48px; height:48px; object-fit:contain; }
+  .hsun { display:flex; align-items:center; border-top:1px solid rgba(255,255,255,.2); padding-top:7px; font-size:14px; white-space:nowrap; }
   .hsun .g { margin-right:14px; }
+  .hsun .sun-icon { display:inline-block; width:20px; height:20px; margin-right:5px; vertical-align:-5px; object-fit:contain; }
   .hsun .g b { font-weight:600; }
-  .hsun .moon { margin-left:auto; margin-right:0; color:#56616d; }
-  #moonIcon { font-size:17px; margin-right:5px; vertical-align:-1px; }
+  .hsun .moon { margin-left:auto; margin-right:0; color:#d5e5dc; }
 
-  #weather { flex:1; display:flex; flex-direction:column; justify-content:space-between; padding:12px 14px; margin-right:10px; min-width:0; box-sizing:border-box; background:#9ccbed; color:#18334c; overflow:hidden; }
+  #weather { flex:1; display:flex; flex-direction:column; justify-content:space-between; padding:12px 14px; margin-right:10px; min-width:0; box-sizing:border-box; background:#d8eaf1; color:#18334c; overflow:hidden; }
   .weather-current { display:flex; align-items:center; justify-content:space-between; min-height:0; }
   .weather-city { font-size:11px; font-weight:700; color:#335875; }
   .weather-state { font-size:12px; color:#335875; margin-top:2px; }
   .weather-temperature { font-size:38px; font-weight:600; line-height:1.1; margin-top:1px; }
   .weather-range { font-size:11px; color:#335875; margin-top:1px; }
   .weather-icon { font-size:42px; line-height:1; margin-left:8px; }
+  .weather-icon svg, .weather-day .ic svg { display:block; width:1em; height:1em; }
   .weather-forecast { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); border-top:1px solid rgba(31,76,111,.16); padding-top:7px; }
   .weather-day { display:grid; grid-template-columns:1fr auto; align-items:center; gap:1px 3px; min-width:0; padding:0 3px; text-align:center; }
   .weather-day + .weather-day { border-left:1px solid rgba(31,76,111,.12); }
@@ -45,12 +56,12 @@
   .weather-day .lo { font-size:11px; color:#496a83; }
   #weather .weather-loading { margin:auto; color:#335875; font-size:13px; }
 
-  #todayCard { flex:.8; min-width:230px; padding:10px 12px; box-sizing:border-box; display:flex; flex-direction:column; background:#fffefa; }
-  #todayHeading { margin-bottom:5px; }
+  #todayCard { flex:.8; min-width:230px; padding:10px 12px; box-sizing:border-box; display:flex; flex-direction:column; background:#fffefa; border-top:3px solid var(--cranberry); }
+  #todayHeading { margin-bottom:5px; color:var(--cranberry); }
   #todayList { flex:1; min-height:0; display:flex; flex-direction:column; justify-content:space-between; overflow:hidden; }
   .today-person { display:flex; align-items:center; min-height:0; flex:1; gap:8px; overflow:hidden; }
   .today-avatar { position:relative; display:inline-flex; align-items:center; justify-content:center; flex:none; width:38px; height:38px; border-radius:50%; overflow:hidden; color:#fff; font-size:14px; font-weight:700; }
-  .today-avatar img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:50%; }
+  .today-avatar img { position:absolute; top:0; right:0; bottom:0; left:0; display:block; width:100%; height:100%; object-fit:cover; border-radius:50%; }
   .today-details { flex:1; min-width:0; overflow:hidden; }
   .today-name { display:block; font-size:12px; line-height:15px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#34404b; }
   .today-status { font-size:9px; font-weight:500; color:#a16a38; }
@@ -59,41 +70,41 @@
   #comingUp .lab { white-space:nowrap; }
   #comingList { display:flex; align-items:center; gap:8px; flex:1; min-width:0; overflow:hidden; }
   .ci { display:flex; align-items:center; min-width:0; font-size:11px; font-weight:600; }
-  .ci .ico { flex:none; font-size:12px; text-align:center; margin-right:3px; }
   .ci .tx { min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .ci .bd { margin-left:4px; font-size:10px; font-weight:700; padding:2px 5px; border-radius:10px; background:#f8bd7e; color:#684b28; white-space:nowrap; }
-  .ci .bd.soon { background:#f5e2c9; color:#684b28; }
+  .ci .bd { margin-left:4px; font-size:10px; font-weight:700; padding:2px 5px; border-radius:10px; background:#f3e5c7; color:#684b28; white-space:nowrap; }
+  .ci .bd.soon { background:#f7e1df; color:#843c43; }
   .ci.none { color:#80613a; font-weight:400; }
 
   /* ---- calendar ---- */
-  #month { flex:1; min-height:0; padding:10px 12px; display:flex; flex-direction:column; background:#fffefa; }
+  #month { position:relative; flex:1; min-height:0; padding:10px 12px; display:flex; flex-direction:column;
+    background:linear-gradient(rgba(255,254,250,.62),rgba(255,254,250,.62)),url("calendar-forest.png") center/cover no-repeat; }
   #mh { display:flex; align-items:center; margin-bottom:8px; }
-  #mtitle { font-size:26px; font-weight:600; margin:0 12px; white-space:nowrap; }
-  .nb { background:#f0eee7; color:#34404b; border:0; border-radius:10px; font-size:20px; font-family:inherit; padding:5px 14px; margin-right:8px; }
+  #mtitle { font-size:26px; font-weight:600; margin:0 12px; white-space:nowrap; color:var(--pine); }
+  .nb { background:#e9efe9; color:var(--pine); border:0; border-radius:10px; font-size:20px; font-family:inherit; padding:5px 14px; margin-right:8px; }
   .nb.today { font-size:14px; padding:8px 14px; }
   .nb.view-toggle { font-size:13px; padding:8px 12px; margin-right:0; }
   #wk { display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); grid-gap:4px; margin-bottom:4px; }
   #wk div { text-align:center; font-size:11px; font-weight:700; color:#7b838b; text-transform:uppercase; letter-spacing:1px; }
   #wk div.we { color:#687f8c; }
   #grid { flex:1; min-height:0; display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); grid-gap:4px; }
-  .cell { background:#f5f3ed; border-radius:9px; padding:4px 5px; overflow:hidden; min-width:0; min-height:0; }
-  .cell.we { background:#f0f1ec; }
+  .cell { background:rgba(241,245,240,.84); border-radius:9px; padding:4px 5px; overflow:hidden; min-width:0; min-height:0; }
+  .cell.we { background:rgba(237,240,233,.88); }
   .cell.out { opacity:.4; }
-  .cell.today { background:#edf5fa; box-shadow:inset 0 0 0 2px #63a9d4; opacity:1; }
+  .cell.today { background:#fff3ec; box-shadow:inset 0 0 0 2px var(--cranberry); opacity:1; }
   .dnum { display:inline-block; min-width:18px; height:18px; line-height:18px; padding:0 3px; box-sizing:border-box; font-size:13px; font-weight:700; color:#46525d; text-align:center; border-radius:9px; margin-bottom:1px; }
-  .cell.today .dnum { background:#63a9d4; color:#fff; }
+  .cell.today .dnum { background:var(--cranberry); color:#fff; }
   .cell.hol .dnum { color:#b77527; }
   .chip { font-size:12px; line-height:14px; height:14px; margin-bottom:1px; padding:0 3px; border-radius:7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#26313b; }
   .chip .dot { display:inline-block; width:6px; height:6px; border-radius:3px; margin-right:3px; vertical-align:1px; }
   .chip b { font-weight:600; color:#3d4b57; margin-right:4px; }
-  .chip.hol { background:#f9e6c8; color:#80531f; }
+  .chip.hol { background:#f6e5c4; color:#80531f; }
   .today-empty { font-size:11px; color:#73818c; padding:2px 5px; }
   .more { font-size:11px; line-height:13px; color:#73818c; padding-left:5px; }
   #toast { position:absolute; bottom:1px; left:0; right:0; text-align:center; font-size:12px; color:#596773; }
 
   @media (max-width:900px) {
     #app { padding:12px 10px 8px; }
-    #top { height:150px; }
+    #top { height:174px; }
     #hero { flex:1; padding:10px; }
     #weather { flex:1.1; padding:8px; }
     #todayCard { flex:.8; min-width:210px; padding:8px; }
@@ -107,10 +118,17 @@
     .nb { margin-right:4px; padding:5px 10px; }
   }
   @media (max-width:620px) {
-    #top { height:260px; flex-wrap:wrap; }
+    #top { height:286px; flex-wrap:wrap; }
     #hero, #weather { flex:1 1 calc(50% - 5px); height:142px; }
+    #hero { height:174px; }
     #todayCard { display:flex; flex:1 0 100%; min-width:0; height:112px; padding:6px 10px; }
     .today-avatar { width:26px; height:26px; }
+    #christmasCountdown { white-space:normal; gap:5px; font-size:10px; }
+    #christmasCountdown span:last-child { min-width:0; }
+    .hsun { flex-wrap:wrap; row-gap:3px; white-space:normal; }
+    .hsun .g { margin-right:4px; }
+    .hsun .sun-icon { width:16px; height:16px; margin-right:3px; }
+    .hsun .moon { display:block; flex:1 0 100%; margin-left:0; font-size:9px; }
     #weather { margin-right:0; }
     .weather-temperature { font-size:30px; }
     .weather-icon { font-size:32px; }
@@ -120,9 +138,9 @@
   }
   @media (max-height:600px) {
     #app { padding-top:8px; padding-bottom:6px; }
-    #top { height:108px; margin-bottom:6px; }
+    #top { height:140px; margin-bottom:6px; }
     #hero { padding:8px 12px 7px; }
-    #hero, #weather { height:108px; }
+    #hero, #weather { height:140px; }
     #time { font-size:42px; }
     #date { font-size:11px; margin-top:2px; }
     .hsun { padding-top:4px; font-size:10px; }
@@ -136,6 +154,9 @@
     .weather-day .ic { font-size:14px; }
     .weather-day .hi, .weather-day .lo { font-size:9px; }
     #todayCard { display:none; }
+    #christmasCountdown { gap:4px; font-size:9px; }
+    #christmasTree { width:30px; height:30px; }
+    .hsun .moon { font-size:8px; }
     #todayCard { padding:6px 8px; }
     #todayHeading { margin-bottom:2px; font-size:9px; }
     .today-person { gap:6px; }
@@ -163,12 +184,19 @@
   <div id="top">
     <div id="hero" class="card">
       <div class="hrow">
-        <div class="hl"><div id="time">--:--</div><div id="date"></div></div>
+        <div class="hl">
+          <div id="time">--:--</div>
+          <div id="date"></div>
+          <div id="christmasCountdown">
+            <img id="christmasTree" src="christmas-tree.png" alt="Christmas tree">
+            <span id="christmasText"></span>
+          </div>
+        </div>
       </div>
       <div class="hsun">
-        <span class="g">&#127749; <b id="sunrise">--:--</b></span>
-        <span class="g">&#127751; <b id="sunset">--:--</b></span>
-        <span class="g moon"><span id="moonIcon"></span><span id="moonName"></span></span>
+        <span class="g"><img class="sun-icon" src="sunrise.png" alt="Sunrise"><b id="sunrise">--:--</b></span>
+          <span class="g"><img class="sun-icon" src="sunset.png" alt="Sunset"><b id="sunset">--:--</b></span>
+        <span class="g moon"><span id="moonName"></span></span>
       </div>
     </div>
     <div id="weather" class="card"><div class="weather-loading">Loading weather…</div></div>
@@ -230,7 +258,7 @@ var CONFIG = {
   ],
 
   /* An event is shown as a birthday (with a cake) if its title contains any of these words. */
-  birthdayWords: ["birthday", "bday", "b-day", "დაბადების", "დაბადება", "день рождения", "🎂"]
+  birthdayWords: ["birthday", "bday", "b-day", "დაბადების", "დაბადება", "день рождения"]
 };
 /* ======================================================================== */
 
@@ -257,39 +285,47 @@ function tick(){
 }
 setInterval(tick, 1000); tick();
 
+function updateChristmasCountdown(){
+  var today = startOfDay(new Date()), christmas = new Date(today.getFullYear(),0,7);
+  if(today > christmas) christmas = new Date(today.getFullYear()+1,0,7);
+  var days = Math.round((christmas-today)/86400000);
+  $("christmasText").textContent = days===0 ? "Orthodox Christmas · Jan 7" :
+    days+" "+(days===1?"day":"days")+" to Orthodox Christmas · Jan 7";
+}
+updateChristmasCountdown();
+
 /* ---------- Moon phase (calculated on the iPad, no internet needed) ---------- */
 var SYNODIC = 29.530588853;
 function moonInfo(date){
   var jd = date.getTime()/86400000 + 2440587.5;
   var age = (jd - 2451550.1) % SYNODIC; if(age<0) age += SYNODIC;
   var names = ["New moon","Waxing crescent","First quarter","Waxing gibbous","Full moon","Waning gibbous","Last quarter","Waning crescent"];
-  var icons = ["🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘"];
   var idx = Math.floor(((age + SYNODIC/16) % SYNODIC) / (SYNODIC/8));
   var illum = Math.round((1 - Math.cos(2*Math.PI*age/SYNODIC)) / 2 * 100);
   var toFull = (SYNODIC/2 - age + SYNODIC) % SYNODIC;
-  return { name:names[idx], icon:icons[idx], illum:illum, toFull:Math.round(toFull) };
+  return { name:names[idx], illum:illum, toFull:Math.round(toFull) };
 }
 function showMoon(){
   var n = new Date(), m = moonInfo(new Date(n.getFullYear(), n.getMonth(), n.getDate(), 12, 0));
-  $("moonIcon").textContent = m.icon;
-  $("moonName").textContent = m.name+" · "+m.illum+"%";
+  $("moonName").textContent = "Moon: "+m.name+" · "+m.illum+"%";
 }
 showMoon(); setInterval(showMoon, 10*60*1000);
 
 /* ---------- Weather (Open-Meteo, no key needed) ---------- */
 function wIcon(c){
-  if(c===0) return "☀️";
-  if(c===1) return "🌤️";
-  if(c===2) return "⛅";
-  if(c===3) return "☁️";
-  if(c===45||c===48) return "🌫️";
-  if(c>=51&&c<=57) return "🌦️";
-  if(c>=61&&c<=67) return "🌧️";
-  if(c>=71&&c<=77) return "❄️";
-  if(c>=80&&c<=82) return "🌧️";
-  if(c===85||c===86) return "🌨️";
-  if(c>=95) return "⛈️";
-  return "☁️";
+  var sun = '<circle cx="24" cy="18" r="7" fill="#e4bd70"/><path d="M24 3v5M24 28v4M9 18h5M34 18h5M13.5 7.5l3.5 3.5M31 25l3.5 3.5M34.5 7.5 31 11M17 25l-3.5 3.5" stroke="#d19d3d" stroke-width="2" stroke-linecap="round"/>';
+  var cloud = '<path d="M12 32h23a7 7 0 0 0 0-14 11 11 0 0 0-21-2 8 8 0 0 0-2 16Z" fill="#7894a5" stroke="#5d7d90" stroke-width="1.5"/>';
+  var icon = "";
+  if(c===0) icon = sun;
+  else if(c===1||c===2) icon = sun+cloud;
+  else {
+    icon = cloud;
+    if(c===45||c===48) icon += '<path d="M12 37h24M16 42h19" stroke="#7894a5" stroke-width="2" stroke-linecap="round"/>';
+    else if(c>=71&&c<=77||c===85||c===86) icon += '<path d="M16 37v6M13 40h6M14 38l4 4M18 38l-4 4M28 37v6M25 40h6M26 38l4 4M30 38l-4 4" stroke="#5c9ab4" stroke-width="1.5" stroke-linecap="round"/>';
+    else if(c>=95) icon += '<path d="m25 32-6 9h5l-2 7 9-11h-5l3-5Z" fill="#e4bd70"/>';
+    else if(c>=51&&c<=67||c>=80&&c<=82) icon += '<path d="m17 37-2 5M25 37l-2 5M33 37l-2 5" stroke="#5c9ab4" stroke-width="2" stroke-linecap="round"/>';
+  }
+  return '<svg viewBox="0 0 48 48" aria-hidden="true">'+icon+'</svg>';
 }
 function wLabel(c){
   if(c===0) return "Clear";
@@ -460,13 +496,13 @@ function renderComing(){
   }
   for(i=0;i<=30;i++){
     var day = addDays(today, i), hn = holidaysOn(day);
-    for(k=0;k<hn.length;k++) items.push({ n:i, ico:"🇬🇪", text:hn[k] });
-    for(k=0;k<bd.length;k++) if(occursOn(bd[k], day)) items.push({ n:i, ico:"🎂", text:bd[k].title || "Birthday" });
+    for(k=0;k<hn.length;k++) items.push({ n:i, text:hn[k] });
+    for(k=0;k<bd.length;k++) if(occursOn(bd[k], day)) items.push({ n:i, text:bd[k].title || "Birthday" });
   }
   var h = "";
   for(i=0;i<items.length && i<3;i++){
     var n = items[i].n, label = n===0 ? "Today" : n===1 ? "Tomorrow" : n+" d";
-    h += '<div class="ci"><span class="ico">'+items[i].ico+'</span><span class="tx">'+esc(items[i].text)+'</span><span class="bd'+(n<=1?' soon':'')+'">'+label+'</span></div>';
+    h += '<div class="ci"><span class="tx">'+esc(items[i].text)+'</span><span class="bd'+(n<=1?' soon':'')+'">'+label+'</span></div>';
   }
   el.innerHTML = h || '<div class="ci none">Nothing in the next 30 days</div>';
 }
@@ -496,8 +532,7 @@ function renderTodayEvents(){
       var shown = Math.min(events.length, 2), parts = [];
       for(j=0;j<shown;j++){
         var title = events[j].title || "(no title)";
-        parts.push((events[j].allDay ? "" : pad(events[j].start.getHours())+":"+pad(events[j].start.getMinutes())+" · ")+
-          (isBirthday(title) ? "🎂 " : "")+title);
+        parts.push((events[j].allDay ? "" : pad(events[j].start.getHours())+":"+pad(events[j].start.getMinutes())+" · ")+title);
       }
       if(events.length>shown) parts.push("+"+(events.length-shown)+" more");
       eventText = parts.join(" · ");
@@ -567,7 +602,6 @@ function renderMonth(){
     for(j=0;j<showN;j++){
       var e = list[j].ev, c = list[j].color, tm = e.allDay ? "" : '<b>'+pad(e.start.getHours())+":"+pad(e.start.getMinutes())+'</b>';
       var ttl = e.title || "(no title)";
-      if(isBirthday(ttl)) ttl = "🎂 "+ttl;
       g += '<div class="chip" style="background:'+hexA(c,0.14)+'"><i class="dot" style="background:'+c+';box-shadow:0 0 6px '+c+'"></i>'+tm+esc(ttl)+'</div>';
     }
     if(list.length>showN) g += '<div class="more">+'+(list.length-showN)+' more</div>';
@@ -644,7 +678,7 @@ setInterval(loadWeather, 30*60*1000);
 setInterval(loadAllCals, 10*60*1000);
 /* at midnight: jump back to the current month and refresh */
 var lastDay = new Date().getDate();
-setInterval(function(){ var n=new Date().getDate(); if(n!==lastDay){ lastDay=n; goPeriod(0); loadAllCals(); loadWeather(); } }, 60*1000);
+setInterval(function(){ var n=new Date().getDate(); if(n!==lastDay){ lastDay=n; updateChristmasCountdown(); goPeriod(0); loadAllCals(); loadWeather(); } }, 60*1000);
 document.addEventListener("touchmove", function(e){ e.preventDefault(); }, { passive:false });
 </script>
 </body>
